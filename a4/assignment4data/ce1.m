@@ -1,3 +1,5 @@
+clear all;
+clc;
 load('compEx1data.mat')
 im1 = imread('house1.jpg');
 im2 = imread('house2.jpg');
@@ -8,21 +10,47 @@ X = pflat(X);
 
 
 [plane, eRMS] = least_square(X);
+eRMS
+
+% Use RANSAC to robustly fit a plane to the 3D points
+
+bestInliers = abs(plane'*X)<=0.1;
+bestX = X(:,bestInliers);
+bestPlane = plane;
+
+iterations = 10;
+n = size(X,2);
+
+for i = 1:iterations
+    randind = randperm(n,3);
+    
+    plane   = null(X(:,randind)'); 
+    plane   = plane./norm(plane(1:3)); 
+    inliers = abs(plane'*X) <= 0.1;
+    
+    if size(X(:,inliers),2) > size(X(:,bestInliers),2)
+        bestPlane = plane;
+        bestInliers = inliers;
+        bestX = X(:,bestInliers);
+    end
+end
+
+% Compute the RMS distance between the plane obtained with RANSAC and the distance to the 3D point
+eRMS = sqrt(sum((bestPlane'*bestX).^2)/size(bestX ,2))
 
 % How many inliers do you get?
-inliers = abs(plane'*X) <= 0.1;
-inliers_nbr = sum(inliers(:) == 1)
+inliers_size = size(bestX,2)
 
 % Compute the RMS distance between the plane obtained with RANSAC 
 % and the distance to the 3D points 
 % Plot the absolute distances between the plane and the points in a histogram with 100 bins.
-figure;
-histogram(abs(plane' * X), 100);
+figure(1);
+histogram(abs(bestPlane' * X), 100);
 
 % Solve the total least squares problem with only the inliers
-X = X(:,inliers);
+X = bestX;
 [plane, eRMS] = least_square(X);
-figure;
+figure(2);
 histogram(abs(plane' * X), 100);
 
 % Plot the projection of the inliers into the images
@@ -47,7 +75,7 @@ u = K * U;
 v = K * H;
 
 figure;
-imshow(im2);
+imagesc(im2);
 hold on
 plot(u(1,:), u(2,:), 'mo');
 plot(v(1,:), v(2,:), 'g*');
