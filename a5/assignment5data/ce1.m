@@ -3,13 +3,10 @@ im1=load('kronan1.JPG');
 im2=load('kronan2.JPG');
 
 % Load data from A3 computer exercise 4
-load('a5data.mat'); 
-P2 = K*P2b;
-X = pflat(Xb);
-
-P = {P1, P2};
-U = pflat(X);
-u = {x1n, x2n};
+load('a5data3.mat'); 
+P = {P1,P2};
+U = X;
+u = {K\x1,K\x2};
 
 % Histogram before LM
 [err_init,res_init] = ComputeReprojectionError(P,U,u);

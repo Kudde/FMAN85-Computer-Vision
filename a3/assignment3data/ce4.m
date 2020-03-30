@@ -1,23 +1,19 @@
+clear all
 load('e.mat')
 load('compEx1data.mat')
-load('compEx3data.mat')
+load('compEx3data.mat') 
 im1 = imread('kronan1.JPG');
 im2 = imread('kronan2.JPG');
 
-
-% Triangulate the points using DLT for each of the four camera solutions
-U = [1/sqrt(2) -1/sqrt(2) 0; 1/sqrt(2) 1/sqrt(2) 0 ; 0 0 1];
-V = [1 0 0; 0 0 -1; 0 1 0];
 W = [0 -1 0; 1 0 0; 0 0 1];
 P1 = [eye(3) zeros(3, 1)];
 
-
 u3 = (U(:,3));
 
-P2a = [U * W * V' u3];
-P2b = [U * W * V' -u3];
-P2c = [U * W' * V' u3];
-P2d = [U * W' * V' -u3];
+P2a = [U*W*V' u3]
+P2b = [U*W*V' -u3]
+P2c = [U*W'*V' u3]
+P2d = [U*W'*V' -u3]
 
 x1n = K \ x{1};
 x2n = K \ x{2};
@@ -37,14 +33,13 @@ plot_denorm(K, P2b, Xb, x{2}, im2)
 plot_denorm(K, P2c, Xc, x{2}, im2)
 plot_denorm(K, P2d, Xd, x{2}, im2)
 
-X = pflat(Xa);
-figure
-plot3(X(1,:), X(2,:), X(3,:), 'm.')
-hold on
-plotcams({P1, P2a})
-plotcams({P1, P2b})
-plotcams({P1, P2c})
-plotcams({P1, P2d})
+% Save data for a5
+P2 = P2b;
+P2n = K * P2;
+X = pflat(Xb);
+x1 = x{1};
+x2 = x{2};
+save('a5data3.mat','P1', 'P2', 'P2n', 'X', 'x1', 'x2', 'K');
 
 
 function plot_denorm(K, P2, X, x, im)
@@ -83,5 +78,6 @@ function X = triangulate(x1, x2, P1, P2)
         v = V(:, end);
         X = [X, v(1:4,1)];
     end
+    
 
 end

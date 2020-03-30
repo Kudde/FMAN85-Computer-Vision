@@ -30,7 +30,7 @@ end
 % Check the epipolar constraints ~ 0
 m = mean(diag(x2n' * E * x1n))
 E = E./E(3,3)
-save('e.mat','E');
+save('e.mat','U','V');
 
 % Compute the fundamental matrix for the un-normalized coordinate system
 F = K' \ E / K

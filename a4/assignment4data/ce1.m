@@ -1,5 +1,4 @@
 clear all;
-clc;
 load('compEx1data.mat')
 im1 = imread('house1.jpg');
 im2 = imread('house2.jpg');
@@ -54,8 +53,8 @@ figure(2);
 histogram(abs(plane' * X), 100);
 
 % Plot the projection of the inliers into the images
-plot_to_image(im1, P{1}, X);
-plot_to_image(im2, P{2}, X);
+plot_to_image(im1, P{1}, X, x);
+plot_to_image(im2, P{2}, X, x);
 
 
 % Compute Homography
@@ -81,12 +80,12 @@ plot(u(1,:), u(2,:), 'mo');
 plot(v(1,:), v(2,:), 'g*');
 
 
-function plot_to_image(im, P, X)
+function plot_to_image(im, P, X, x)
     figure
     imagesc(im);
     hold on
-    x = P * X;
-    x = pflat(x);
+    %x = P * X;
+    %x = pflat(x);
     plot(x(1,:), x(2,:), 'm*')
 
 end
